@@ -14,20 +14,8 @@ export const NAVLINKS = [
     href: `/docs/${page_routes[0].href}`,
   },
   {
-    title: "Examples",
-    href: "#",
-  },
-  {
-    title: "Guides",
-    href: "#",
-  },
-  {
-    title: "Community",
-    href: "#",
-  },
-  {
     title: "Blog",
-    href: "#",
+    href: "https://hadess.io",
   },
 ];
 
@@ -52,13 +40,13 @@ export function Navbar() {
             <Search />
             <div className="flex">
               <Link
-                href="https://github.com/nisabmohd/Docs-Stater-Template"
+                href="https://github.com/HadessCS/Adversarial-Knowledge-Workflow-Suite"
                 className={buttonVariants({ variant: "ghost", size: "icon" })}
               >
                 <GithubIcon className="h-[1.1rem] w-[1.1rem]" />
               </Link>
               <Link
-                href="#"
+                href="https://twitter.com/Hadess_security"
                 className={buttonVariants({
                   variant: "ghost",
                   size: "icon",
