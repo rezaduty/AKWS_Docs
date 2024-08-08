@@ -1,0 +1,129 @@
+---
+title: Link Extraction
+description: 
+---
+
+detailed workflow for link extraction using Waybackurls and Gau, and to generate this workflow using the Llama 3 8B model via the VLLM library, follow the pattern below. This includes setting up the LLM model, defining the prompt for generating the workflow, and running the model to get the output.
+
+Code for LLM Model Setup and Prompt for Link Extraction Workflow
+
+```python
+from vllm import LLM
+from transformers import AutoTokenizer
+
+# Load the Llama 3 8B model
+model = LLM("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Load the tokenizer
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Define the prompt for creating a link extraction workflow with Waybackurls and Gau
+prompt_content = """
+You are a security analyst tasked with creating a detailed workflow for link extraction from a web application using two tools: Waybackurls and Gau. Please provide a comprehensive step-by-step guide that includes:
+
+1. **Tool Setup**:
+   - How to install and configure Waybackurls and Gau.
+   - Any required dependencies or configurations.
+
+2. **Link Extraction with Waybackurls**:
+   - Detailed command-line instructions for running Waybackurls to extract URLs from the Wayback Machine.
+   - Expected outputs and interpretation.
+
+3. **Link Extraction with Gau**:
+   - Detailed command-line instructions for running Gau to extract URLs from various sources.
+   - Expected outputs and interpretation.
+
+4. **Combining Results**:
+   - How to merge and analyze the results from Waybackurls and Gau to get a comprehensive list of URLs.
+
+**Example Workflow**:
+1. **Install Waybackurls and Gau**:
+   - **Waybackurls**: Install via Go.
+     - Command: `go install github.com/tomnomnom/waybackurls@latest`
+   - **Gau**: Install via Go.
+     - Command: `go install github.com/lc/gau@latest`
+
+2. **Run Waybackurls**:
+   - **Command**: `cat urls.txt | waybackurls`
+   - **Expected Output**:
+     ```
+     https://example.com/page1
+     https://example.com/page2
+     ```
+
+3. **Run Gau**:
+   - **Command**: `cat urls.txt | gau`
+   - **Expected Output**:
+     ```
+     https://example.com/page3
+     https://example.com/page4
+     ```
+
+4. **Combine and Analyze Results**:
+   - **Merge Outputs**: Combine the URL lists from Waybackurls and Gau.
+   - **Example Command**: `cat waybackurls.txt gau.txt | sort | uniq > all_urls.txt`
+   - **Review Findings**: Analyze the comprehensive URL list for further testing or analysis.
+
+**Notes**:
+- Ensure Waybackurls and Gau are installed and up-to-date.
+- Handle any errors or issues encountered during link extraction.
+- Validate and clean up the final URL list as needed.
+"""
+
+# Prepare the input message
+messages = [{"role": "user", "content": prompt_content}]
+formatted_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+# Generate the output
+output = model.generate(formatted_prompt)
+print(output)
+```
+
+Loading the Model and Tokenizer: The script initializes the Llama 3 8B model and tokenizer from VLLM and Hugging Face.
+
+Defining the Prompt: The prompt outlines the task of creating a workflow for link extraction using Waybackurls and Gau. It includes detailed instructions for tool setup, execution, and result analysis.
+
+Preparing the Input Message: The prompt is formatted using the tokenizer’s apply_chat_template method to prepare it for model inference.
+
+Generating the Output: The model generates the workflow based on the provided prompt.
+
+## Example Output
+
+The output from the model might look like this:
+
+```
+**Link Extraction Workflow: Waybackurls + Gau**
+
+1. **Tool Setup**:
+   - **Install Waybackurls and Gau**:
+     - **Waybackurls**:
+       - Install the tool using Go: `go install github.com/tomnomnom/waybackurls@latest`
+     - **Gau**:
+       - Install the tool using Go: `go install github.com/lc/gau@latest`
+
+2. **Link Extraction with Waybackurls**:
+   - **Command**: `cat urls.txt | waybackurls`
+   - **Expected Output**:
+     
+     https://example.com/page1
+     https://example.com/page2
+    
+
+3. **Link Extraction with Gau**:
+   - **Command**: `cat urls.txt | gau`
+   - **Expected Output**:
+     
+     https://example.com/page3
+     https://example.com/page4
+    
+
+4. **Combine and Analyze Results**:
+   - **Merge Outputs**: Combine the lists of URLs obtained from Waybackurls and Gau into a single list.
+   - **Command Example**: `cat waybackurls.txt gau.txt | sort | uniq > all_urls.txt`
+   - **Review Findings**: Analyze the final list of URLs for further testing or analysis.
+
+**Notes**:
+- Ensure both Waybackurls and Gau are properly installed and updated.
+- Address any errors encountered during the extraction process.
+- Clean and validate the final list of URLs for accuracy.
+```

@@ -1,0 +1,121 @@
+---
+title: Directory Fuzzing
+description:
+---
+
+detailed workflow for directory fuzzing using Gobuster and Rockyou.txt, and to generate this workflow using the Llama 3 8B model via the VLLM library, follow the pattern below. This includes setting up the LLM model, defining the prompt for generating the workflow, and running the model to get the output.
+
+Code for LLM Model Setup and Prompt for Directory Fuzzing Workflow
+
+```python
+from vllm import LLM
+from transformers import AutoTokenizer
+
+# Load the Llama 3 8B model
+model = LLM("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Load the tokenizer
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Define the prompt for creating a directory fuzzing workflow with Gobuster and Rockyou.txt
+prompt_content = """
+You are a security analyst tasked with creating a detailed workflow for directory fuzzing on a web application using two tools: Gobuster and Rockyou.txt. Please provide a comprehensive step-by-step guide that includes:
+
+1. **Tool Setup**:
+   - How to install and configure Gobuster.
+   - How to obtain and use Rockyou.txt for fuzzing.
+   - Any required dependencies or configurations.
+
+2. **Directory Fuzzing with Gobuster**:
+   - Detailed command-line instructions for running Gobuster to discover directories and files.
+   - How to utilize Rockyou.txt as the wordlist for Gobuster.
+   - Expected outputs and interpretation.
+
+3. **Analyzing Results**:
+   - How to analyze the results from Gobuster to identify discovered directories and files.
+   - Recommendations for further steps based on the results.
+
+**Example Workflow**:
+1. **Install Gobuster**:
+   - Download and install Gobuster from the official repository.
+     - Command: `go install github.com/OJ/gobuster/v3@latest`
+   - Verify the installation: `gobuster --help`
+
+2. **Obtain Rockyou.txt**:
+   - Download Rockyou.txt wordlist.
+     - Command: `wget https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/rockyou.txt.gz`
+     - Uncompress the file: `gzip -d rockyou.txt.gz`
+
+3. **Run Gobuster**:
+   - **Command**:
+     ```
+     gobuster dir -u https://example.com -w /path/to/rockyou.txt -o gobuster_results.txt
+     ```
+   - **Expected Output**:
+     ```
+     /admin/          (Status: 200)
+     /login/          (Status: 200)
+     /hidden/         (Status: 403)
+     ```
+
+4. **Analyze Results**:
+   - **Review Findings**: Check the `gobuster_results.txt` file for discovered directories and files.
+   - **Example Analysis**: Look for accessible endpoints and directories that could be potential security issues.
+   - **Further Steps**: Perform manual testing or further automated scanning on the identified endpoints.
+
+**Notes**:
+- Ensure Gobuster and Rockyou.txt are up-to-date.
+- Adjust the wordlist and parameters based on the target application’s context.
+- Handle any errors or issues encountered during the directory fuzzing process.
+"""
+
+# Prepare the input message
+messages = [{"role": "user", "content": prompt_content}]
+formatted_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+# Generate the output
+output = model.generate(formatted_prompt)
+print(output)
+```
+
+Loading the Model and Tokenizer: The script initializes the Llama 3 8B model and tokenizer from VLLM and Hugging Face.
+
+Defining the Prompt: The prompt outlines the task of creating a workflow for directory fuzzing using Gobuster and Rockyou.txt. It includes detailed instructions for setup, execution, and result analysis.
+
+Preparing the Input Message: The prompt is formatted using the tokenizer’s apply_chat_template method to prepare it for model inference.
+
+Generating the Output: The model generates the workflow based on the provided prompt.
+
+### Example Output
+The output from the model might look like this:
+
+```
+**Directory Fuzzing Workflow: Gobuster + Rockyou.txt**
+
+1. **Tool Setup**:
+   - **Install Gobuster**:
+     - Install Gobuster via Go: `go install github.com/OJ/gobuster/v3@latest`
+     - Verify installation by running: `gobuster --help`
+   - **Obtain Rockyou.txt**:
+     - Download Rockyou.txt: `wget https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/rockyou.txt.gz`
+     - Uncompress the file: `gzip -d rockyou.txt.gz`
+
+2. **Run Gobuster**:
+   - **Command**: `gobuster dir -u https://example.com -w /path/to/rockyou.txt -o gobuster_results.txt`
+   - **Expected Output**:
+     
+     /admin/          (Status: 200)
+     /login/          (Status: 200)
+     /hidden/         (Status: 403)
+     
+
+3. **Analyze Results**:
+   - **Review Findings**: Check the `gobuster_results.txt` for discovered directories and files.
+   - **Example Analysis**: Assess endpoints for potential security risks.
+   - **Further Steps**: Conduct additional testing or scanning on identified endpoints.
+
+**Notes**:
+- Ensure both Gobuster and Rockyou.txt are updated.
+- Customize wordlists and parameters as per the target application's needs.
+- Address any issues encountered during the fuzzing process.
+```

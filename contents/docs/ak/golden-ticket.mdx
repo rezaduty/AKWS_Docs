@@ -1,0 +1,42 @@
+---
+title: AK2 - Golden Ticket
+description: 
+---
+
+The AK2 Golden Ticket tool is designed to simulate a Golden Ticket attack, a sophisticated attack technique used in Kerberos authentication. In this type of attack, an attacker forges a Kerberos ticket to gain unauthorized access to resources within a domain, bypassing normal authentication mechanisms.
+
+## Features:
+
+Emulation of Ticket Creation:
+
+AK2 allows users to emulate the creation of Golden Tickets using compromised domain credentials. This simulation replicates the process of generating forged Kerberos tickets, which can be used to access various domain resources.
+Simulation of Ticket Usage:
+
+The tool can simulate the usage of forged tickets to access protected resources within the domain. This helps in understanding how such tickets can bypass security controls and compromise sensitive systems.
+Detection Algorithms:
+
+AK2 includes advanced detection algorithms to identify Golden Ticket usage. These algorithms help in recognizing unauthorized access attempts and analyzing the effectiveness of existing defenses against such attacks.
+Modular Design:
+
+Independent Modules: Each attack and defense module within AK2 is independent, allowing for easy integration and customization. This modular design supports flexible configurations and tailored attack simulations.
+Machine Learning Integration:
+
+Enhanced Simulations: The tool leverages machine learning algorithms to improve attack simulations and defensive strategies. This integration enhances the realism of simulated attacks and provides insights into potential weaknesses.
+Scalable and Configurable:
+
+Environment Adaptability: AK2 is designed to work in various environments, whether on small-scale networks or large enterprise domains. It offers configuration options to tailor the behavior of each module based on specific needs.
+Detailed Reporting:
+
+Comprehensive Reports: AK2 provides detailed reports on each simulated attack, including success rates and detected vulnerabilities. These reports offer valuable insights into the effectiveness of security measures and areas requiring improvement.
+
+```python
+# Basic command to simulate Golden Ticket creation and usage
+ak2 --create-ticket --domain-credentials compromised_creds.txt --resource target_resources.txt
+
+# Command to run detection algorithms for identifying Golden Ticket usage
+ak2 --detect-golden-ticket --domain logs --report
+
+# Command to generate a detailed report on the simulation
+ak2 --report --detailed --output report_summary.pdf
+
+```

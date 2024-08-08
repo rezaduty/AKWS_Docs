@@ -1,0 +1,117 @@
+---
+title: Subdomain Enumeration
+description: 
+---
+
+To create a workflow for "Subdomain Enumeration: Subfinder + Httpx" using an LLM model, you'll need to define a prompt that instructs the model to generate a detailed workflow for using these tools. Here’s how you can structure the code:
+
+Code for LLM Model Setup and Prompt for Workflow
+
+```python
+
+from vllm import LLM
+from transformers import AutoTokenizer
+
+# Load the Llama 3 8B model
+model = LLM("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Load the tokenizer
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Define the prompt for creating a workflow with Subfinder and Httpx
+prompt_content = """
+You are a security analyst who needs to create a detailed workflow for subdomain enumeration using two tools: Subfinder and Httpx. Please provide a comprehensive step-by-step guide that includes:
+
+1. **Tool Setup**:
+   - How to install and configure Subfinder and Httpx.
+   - Any required dependencies or configurations.
+
+2. **Subdomain Enumeration with Subfinder**:
+   - Detailed command-line instructions for running Subfinder.
+   - Expected outputs and interpretation.
+
+3. **Probing HTTP Services with Httpx**:
+   - Detailed command-line instructions for using Httpx to probe the discovered subdomains.
+   - Expected outputs and interpretation.
+
+4. **Combining Results**:
+   - How to combine and analyze the results from both tools.
+
+**Example Workflow**:
+1. **Install Subfinder and Httpx**:
+   - Commands: `apt-get install subfinder`, `apt-get install httpx`
+   - Configuration: Set up any configuration files or environment variables.
+
+2. **Run Subfinder**:
+   - Command: `subfinder -d example.com -silent`
+   - Expected Output: List of discovered subdomains.
+
+3. **Run Httpx**:
+   - Command: `cat subdomains.txt | httpx -silent -status-code`
+   - Expected Output: Status codes and reachable subdomains.
+
+4. **Analyze Results**:
+   - Combine the results to identify which subdomains are reachable and respond to HTTP requests.
+
+Please ensure that the workflow includes clear instructions and any additional notes or best practices.
+"""
+
+# Prepare the input message
+messages = [{"role": "user", "content": prompt_content}]
+formatted_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+# Generate the output
+output = model.generate(formatted_prompt)
+print(output)
+
+
+```
+
+
+Loading the Model and Tokenizer: The script initializes the Llama 3 8B model and tokenizer from the VLLM library and the Hugging Face Transformers library.
+
+Defining the Prompt: The prompt specifies that the model should generate a detailed workflow for using Subfinder and Httpx. It outlines steps for tool setup, running commands, and analyzing results.
+
+Preparing the Input Message: The prompt is formatted using the tokenizer’s apply_chat_template method to prepare it for model inference.
+
+Generating the Output: The model generates a comprehensive workflow based on the provided prompt.
+
+## Example Output
+
+The output from the model might look like this:
+
+```
+**Subdomain Enumeration Workflow: Subfinder + Httpx**
+
+1. **Tool Setup**:
+   - **Install Subfinder and Httpx**:
+     - Subfinder: Download and install from [Subfinder GitHub](https://github.com/projectdiscovery/subfinder/releases).
+     - Httpx: Download and install from [Httpx GitHub](https://github.com/projectdiscovery/httpx/releases).
+     - **Configuration**: Ensure both tools are in your PATH and configured for your environment.
+
+2. **Subdomain Enumeration with Subfinder**:
+   - **Command**: `subfinder -d example.com -silent`
+   - **Expected Output**:
+     
+     sub1.example.com
+     sub2.example.com
+     sub3.example.com
+     
+
+3. **Probing HTTP Services with Httpx**:
+   - **Command**: `cat subdomains.txt | httpx -silent -status-code`
+   - **Expected Output**:
+     
+     sub1.example.com: 200
+     sub2.example.com: 404
+     sub3.example.com: 200
+     
+
+4. **Combining Results**:
+   - **Analysis**: Review the list of reachable subdomains with HTTP status codes to identify which are operational. For example, `sub1.example.com` and `sub3.example.com` are reachable, whereas `sub2.example.com` is not.
+
+**Notes**:
+- Ensure Subfinder and Httpx are up-to-date.
+- Verify network configurations and permissions.
+- Handle any errors or exceptions during tool execution.
+```

@@ -1,0 +1,120 @@
+---
+title: Port Scan
+description: 
+---
+
+workflow for port scanning using Nmap and Masscan, and to generate this workflow using the Llama 3 8B model via the VLLM library, follow the steps below. This includes setting up the LLM model, defining the prompt for generating the workflow, and running the model to get the output.
+
+Code for LLM Model Setup and Prompt for Port Scanning Workflow
+
+```python
+from vllm import LLM
+from transformers import AutoTokenizer
+
+# Load the Llama 3 8B model
+model = LLM("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Load the tokenizer
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Define the prompt for creating a port scanning workflow with Nmap and Masscan
+prompt_content = """
+You are a security analyst tasked with creating a detailed workflow for port scanning using two tools: Nmap and Masscan. Please provide a comprehensive step-by-step guide that includes:
+
+1. **Tool Setup**:
+   - How to install and configure Nmap and Masscan.
+   - Any required dependencies or configurations.
+
+2. **Port Scanning with Masscan**:
+   - Detailed command-line instructions for running Masscan to quickly identify open ports on a target.
+   - Expected outputs and interpretation.
+
+3. **Detailed Scanning with Nmap**:
+   - Detailed command-line instructions for running Nmap to perform a more thorough scan and service enumeration.
+   - Expected outputs and interpretation.
+
+4. **Combining Results**:
+   - How to combine and analyze the results from both tools to get a complete picture of open ports and services.
+
+**Example Workflow**:
+1. **Install Nmap and Masscan**:
+   - Commands: `apt-get install nmap`, `apt-get install masscan`
+   - Configuration: Ensure both tools are in your PATH and configured for your environment.
+
+2. **Run Masscan**:
+   - Command: `masscan -p1-65535 192.168.1.0/24 --rate=1000`
+   - Expected Output: List of open ports on the target network.
+
+3. **Run Nmap**:
+   - Command: `nmap -p- -T4 -A -v 192.168.1.1`
+   - Expected Output: Detailed scan results including service detection and version information.
+
+4. **Analyze Results**:
+   - **Combine Outputs**: Integrate the quick scan results from Masscan with the detailed results from Nmap to identify all open ports and their associated services.
+   - **Example Analysis**: Compare the list of ports from Masscan with the detailed information from Nmap to identify any discrepancies or additional details.
+
+**Notes**:
+- Ensure Nmap and Masscan are up-to-date.
+- Adjust scan parameters based on network conditions and specific requirements.
+- Handle any errors or issues that arise during the scans.
+"""
+
+# Prepare the input message
+messages = [{"role": "user", "content": prompt_content}]
+formatted_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+# Generate the output
+output = model.generate(formatted_prompt)
+print(output)
+```
+
+
+Loading the Model and Tokenizer: The script loads the Llama 3 8B model and tokenizer from VLLM and Hugging Face, respectively.
+
+Defining the Prompt: The prompt describes the task of creating a port scanning workflow using Nmap and Masscan. It includes detailed instructions for installing the tools, running scans, and analyzing results.
+
+Preparing the Input Message: The prompt is formatted and prepared for the model using the tokenizer’s apply_chat_template method.
+
+Generating the Output: The model generates the workflow based on the provided prompt.
+
+## Example Output
+
+The output from the model might look like this:
+
+```
+**Port Scanning Workflow: Nmap + Masscan**
+
+1. **Tool Setup**:
+   - **Install Nmap and Masscan**:
+     - **Nmap**: `apt-get install nmap`
+     - **Masscan**: `apt-get install masscan`
+     - **Configuration**: Verify that both tools are correctly installed and accessible from the command line.
+
+2. **Port Scanning with Masscan**:
+   - **Command**: `masscan -p1-65535 192.168.1.0/24 --rate=1000`
+   - **Expected Output**:
+     
+     Discovered open port 80/tcp on 192.168.1.10
+     Discovered open port 22/tcp on 192.168.1.20
+     
+
+3. **Detailed Scanning with Nmap**:
+   - **Command**: `nmap -p- -T4 -A -v 192.168.1.1`
+   - **Expected Output**:
+
+     Starting Nmap 7.80 ( https://nmap.org ) at 2024-08-08 10:00 UTC
+     Nmap scan report for 192.168.1.1
+     Host is up (0.0010s latency).
+     Not shown: 999 closed ports
+     PORT     STATE SERVICE    VERSION
+     22/tcp   open  ssh        OpenSSH 7.6p1 Debian 4
+     80/tcp   open  http       Apache httpd 2.4.38
+
+4. **Analyze Results**:
+   - **Combine Outputs**: Merge the quick scan results from Masscan with the detailed Nmap results to get a comprehensive view of open ports and their services.
+   - **Example Analysis**: Identify all active services and compare against the initial Masscan results for verification and additional details.
+
+**Notes**:
+- Ensure that scans are conducted in accordance with legal and ethical guidelines.
+- Adjust parameters and rates based on network size and performance considerations.
+```

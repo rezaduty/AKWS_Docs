@@ -1,0 +1,136 @@
+---
+title: Parameter Fuzzing
+description:
+---
+
+detailed workflow for parameter fuzzing using FFUF and ParamMiner, and to generate this workflow using the Llama 3 8B model via the VLLM library, follow the pattern below. This includes setting up the LLM model, defining the prompt for generating the workflow, and running the model to get the output.
+
+Code for LLM Model Setup and Prompt for Parameter Fuzzing Workflow
+
+```python
+from vllm import LLM
+from transformers import AutoTokenizer
+
+# Load the Llama 3 8B model
+model = LLM("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Load the tokenizer
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Define the prompt for creating a parameter fuzzing workflow with FFUF and ParamMiner
+prompt_content = """
+You are a security analyst tasked with creating a detailed workflow for parameter fuzzing on a web application using two tools: FFUF and ParamMiner. Please provide a comprehensive step-by-step guide that includes:
+
+1. **Tool Setup**:
+   - How to install and configure FFUF.
+   - How to install and use ParamMiner.
+   - Any required dependencies or configurations.
+
+2. **Parameter Fuzzing with FFUF**:
+   - Detailed command-line instructions for running FFUF to discover hidden parameters.
+   - How to utilize parameter lists and configuration files with FFUF.
+   - Expected outputs and interpretation.
+
+3. **Parameter Extraction with ParamMiner**:
+   - Detailed command-line instructions for using ParamMiner to identify and extract hidden parameters from the application.
+   - Expected outputs and interpretation.
+
+4. **Combining Results**:
+   - How to merge and analyze the results from FFUF and ParamMiner to get a comprehensive view of application parameters.
+
+**Example Workflow**:
+1. **Install FFUF**:
+   - Download and install FFUF.
+     - Command: `go install github.com/ffuf/ffuf@latest`
+   - Verify installation: `ffuf -h`
+
+2. **Install ParamMiner**:
+   - Download and install ParamMiner.
+     - Command: `pip install paramminer`
+   - Verify installation: `paramminer -h`
+
+3. **Run FFUF for Parameter Fuzzing**:
+   - **Command**:
+     ```
+     ffuf -u https://example.com/FUZZ -w /path/to/params.txt -o ffuf_results.json
+     ```
+   - **Expected Output**:
+     ```
+     [200] /admin?parameter=value
+     [200] /login?user=username
+     ```
+
+4. **Run ParamMiner for Parameter Extraction**:
+   - **Command**:
+     ```
+     paramminer -u https://example.com -o paramminer_results.txt
+     ```
+   - **Expected Output**:
+     ```
+     Extracted Parameters:
+     - user
+     - token
+     ```
+
+5. **Combine and Analyze Results**:
+   - **Merge Outputs**: Combine the results from FFUF and ParamMiner.
+   - **Command Example**: `cat ffuf_results.json paramminer_results.txt | jq .`
+   - **Review Findings**: Analyze the combined results for hidden or sensitive parameters that could be exploited.
+
+**Notes**:
+- Ensure both FFUF and 
+```
+
+Loading the Model and Tokenizer: The script initializes the Llama 3 8B model and tokenizer from VLLM and Hugging Face.
+
+Defining the Prompt: The prompt outlines the task of creating a workflow for parameter fuzzing using FFUF and ParamMiner. It includes detailed instructions for setup, execution, and result analysis.
+
+Preparing the Input Message: The prompt is formatted using the tokenizer’s apply_chat_template method to prepare it for model inference.
+
+Generating the Output: The model generates the workflow based on the provided prompt.
+
+## Example Output
+
+The output from the model might look like this:
+
+
+**Parameter Fuzzing Workflow: FFUF + ParamMiner**
+
+1. **Tool Setup**:
+   - **Install FFUF**:
+     - Install FFUF via Go: `go install github.com/ffuf/ffuf@latest`
+     - Verify installation by running: `ffuf -h`
+   - **Install ParamMiner**:
+     - Install ParamMiner via pip: `pip install paramminer`
+     - Verify installation by running: `paramminer -h`
+
+2. **Run FFUF for Parameter Fuzzing**:
+   - **Command**: `ffuf -u https://example.com/FUZZ -w /path/to/params.txt -o ffuf_results.json`
+   - **Expected Output**:
+     ```
+     [200] /admin?parameter=value
+     [200] /login?user=username
+     ```
+
+3. **Run ParamMiner for Parameter Extraction**:
+   - **Command**: `paramminer -u https://example.com -o paramminer_results.txt`
+   - **Expected Output**:
+     ```
+     Extracted Parameters:
+     - user
+     - token
+     ```
+
+4. **Combine and Analyze Results**:
+   - **Merge Outputs**: Combine results from FFUF and ParamMiner.
+   - **Command Example**: `cat ffuf_results.json paramminer_results.txt | jq .`
+   - **Review Findings**: Examine combined results to identify potential security issues with parameters.
+
+**Notes**:
+- Ensure FFUF and ParamMiner are both installed and updated.
+- Tailor the parameters and wordlists to suit the target application.
+- Address any issues encountered during the fuzzing and extraction processes.
+
+
+
+

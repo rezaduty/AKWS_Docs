@@ -7,10 +7,10 @@ import { Footer } from "@/components/footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Docs stater template",
-  metadataBase: new URL("https://docstemplate.vercel.app/"),
+  title: "AKWS Documentation",
+  metadataBase: new URL("https://akws.hadess.io/"),
   description:
-    "This comprehensive documentation template, crafted with Next.js and available as open-source, delivers a sleek and responsive design, tailored to meet all your project documentation requirements.",
+    "This comprehensive documentation HADESS AKWS Framework",
 };
 
 export default function RootLayout({

@@ -1,0 +1,127 @@
+---
+title: Content Discovery
+description:
+---
+
+workflow for content discovery using Dirsearch and Seclists, and to generate this workflow using the Llama 3 8B model via the VLLM library, follow the pattern below. This includes setting up the LLM model, defining the prompt for generating the workflow, and running the model to get the output.
+
+Code for LLM Model Setup and Prompt for Content Discovery Workflow
+
+```python
+from vllm import LLM
+from transformers import AutoTokenizer
+
+# Load the Llama 3 8B model
+model = LLM("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Load the tokenizer
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+
+# Define the prompt for creating a content discovery workflow with Dirsearch and Seclists
+prompt_content = """
+You are a security analyst tasked with creating a detailed workflow for content discovery on a web application using two tools: Dirsearch and Seclists. Please provide a comprehensive step-by-step guide that includes:
+
+1. **Tool Setup**:
+   - How to install and configure Dirsearch and Seclists.
+   - Any required dependencies or configurations.
+
+2. **Content Discovery with Dirsearch**:
+   - Detailed command-line instructions for running Dirsearch to discover directories and files on a website.
+   - Expected outputs and interpretation.
+
+3. **Using Seclists for Wordlists**:
+   - How to utilize Seclists to provide wordlists for Dirsearch.
+   - Instructions for selecting appropriate wordlists and integrating them with Dirsearch.
+
+4. **Combining Results**:
+   - How to analyze and interpret the results from Dirsearch to identify potential content and vulnerabilities.
+
+**Example Workflow**:
+1. **Install Dirsearch and Seclists**:
+   - **Dirsearch**: Clone the repository and install dependencies.
+     - Command: `git clone https://github.com/directordavid/dirsearch.git`
+     - Navigate to the directory: `cd dirsearch`
+   - **Seclists**: Clone the repository.
+     - Command: `git clone https://github.com/seclists/seclists.git`
+     - Wordlists are located in `seclists/Discovery/Web-Content/`.
+
+2. **Run Dirsearch**:
+   - **Command**: `python3 dirsearch.py -u https://example.com -w /path/to/seclists/Discovery/Web-Content/common.txt`
+   - **Expected Output**:
+     ```
+     [200] /admin/
+     [200] /login/
+     [404] /nonexistent/
+     ```
+
+3. **Using Seclists**:
+   - **Select Wordlists**: Choose appropriate wordlists from Seclists based on the target application.
+     - Common lists include `common.txt`, `big.txt`, etc.
+   - **Command Example**: `python3 dirsearch.py -u https://example.com -w /path/to/seclists/Discovery/Web-Content/big.txt`
+
+4. **Analyze Results**:
+   - **Review Findings**: Analyze the discovered directories and files to identify potential vulnerabilities or sensitive content.
+   - **Example Analysis**: Identify accessible admin panels, login pages, and other potentially sensitive endpoints.
+
+**Notes**:
+- Ensure Dirsearch and Seclists are up-to-date.
+- Choose appropriate wordlists based on the target application's context.
+- Handle any errors or issues encountered during the content discovery process.
+"""
+
+# Prepare the input message
+messages = [{"role": "user", "content": prompt_content}]
+formatted_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+# Generate the output
+output = model.generate(formatted_prompt)
+print(output)
+```
+
+Loading the Model and Tokenizer: The script initializes the Llama 3 8B model and tokenizer from VLLM and Hugging Face.
+
+Defining the Prompt: The prompt outlines the task of creating a workflow for content discovery using Dirsearch and Seclists. It includes detailed instructions for setup, execution, and result analysis.
+
+Preparing the Input Message: The prompt is formatted using the tokenizer’s apply_chat_template method to prepare it for model inference.
+
+Generating the Output: The model generates the workflow based on the provided prompt.
+
+## Example Output
+
+The output from the model might look like this:
+
+```
+**Content Discovery Workflow: Dirsearch + Seclists**
+
+1. **Tool Setup**:
+   - **Install Dirsearch and Seclists**:
+     - **Dirsearch**:
+       - Clone the repository: `git clone https://github.com/directordavid/dirsearch.git`
+       - Navigate to the directory: `cd dirsearch`
+       - Install dependencies: `pip install -r requirements.txt`
+     - **Seclists**:
+       - Clone the repository: `git clone https://github.com/seclists/seclists.git`
+       - Wordlists are available in `seclists/Discovery/Web-Content/`.
+
+2. **Content Discovery with Dirsearch**:
+   - **Command**: `python3 dirsearch.py -u https://example.com -w /path/to/seclists/Discovery/Web-Content/common.txt`
+   - **Expected Output**:
+     
+     [200] /admin/
+     [200] /login/
+     [404] /nonexistent/
+
+3. **Using Seclists for Wordlists**:
+   - **Select Wordlists**: Utilize Seclists’ wordlists based on the target’s context.
+     - Common lists include `common.txt`, `big.txt`, and others.
+   - **Command Example**: `python3 dirsearch.py -u https://example.com -w /path/to/seclists/Discovery/Web-Content/big.txt`
+
+4. **Analyze Results**:
+   - **Review Findings**: Check the discovered directories and files for potential vulnerabilities or sensitive content.
+   - **Example Analysis**: Assess accessible endpoints like admin panels or login pages for security risks.
+
+**Notes**:
+- Keep Dirsearch and Seclists updated.
+- Use appropriate wordlists based on the target's characteristics.
+- Address any errors or issues encountered during the content discovery process.
+```
